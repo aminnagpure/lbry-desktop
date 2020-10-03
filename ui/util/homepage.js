@@ -18,7 +18,6 @@ export type RowDataItem = {
     channelIds?: Array<string>,
     pageSize: number,
   },
-  hideRepostLabel?: boolean,
   route?: string,
   hideForUnauth?: boolean,
 };

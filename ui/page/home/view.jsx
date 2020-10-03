@@ -35,7 +35,7 @@ function HomePage(props: Props) {
 
   return (
     <Page fullWidthPage>
-      {rowData.map(({ title, route, link, help, icon, options = {}, hideRepostLabel = false }, index) => (
+      {rowData.map(({ title, route, link, help, icon, options = {} }, index) => (
         <div key={title} className="claim-grid__wrapper">
           {index === 0 ? (
             <span
