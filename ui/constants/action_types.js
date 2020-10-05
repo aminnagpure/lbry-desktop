@@ -275,6 +275,11 @@ export const COMMENT_REACT_FAILED = 'COMMENT_REACT_FAILED';
 // Blocked channels
 export const TOGGLE_BLOCK_CHANNEL = 'TOGGLE_BLOCK_CHANNEL';
 
+// Tags
+export const TOGGLE_TAG_FOLLOW = 'TOGGLE_TAG_FOLLOW';
+export const TAG_ADD = 'TAG_ADD';
+export const TAG_DELETE = 'TAG_DELETE';
+
 // Notifications
 export const WS_CONNECT = 'WS_CONNECT';
 export const WS_DISCONNECT = 'WS_DISCONNECT';
