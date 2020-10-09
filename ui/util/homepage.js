@@ -1138,6 +1138,7 @@ const FINCANCE_CHANNEL_IDS = [
   '6977c53ca432fd49f5d441a08da01930eb74401d',
   '183638482bda8aca67a57f577c927c0649062c9e',
   'ca1727de1ccaa2de2fb74fefdfcf3d630f3cae12',
+  '3fda836a92faaceedfe398225fb9b2ee2ed1f01a',
 ];
 
 export const FINANCE = {
