@@ -38,16 +38,14 @@ export default function SearchPage(props: Props) {
     onFeedbackNegative,
     location,
     isSearching,
-    showNsfw,
+    // showNsfw,
     isAuthenticated,
   } = props;
   const { push } = useHistory();
   const urlParams = new URLSearchParams(location.search);
   const urlQuery = urlParams.get('q') || '';
   const additionalOptions: AdditionalOptions = { isBackgroundSearch: false };
-  if (!showNsfw) {
-    additionalOptions['nsfw'] = false;
-  }
+  additionalOptions['nsfw'] = false;
 
   const INVALID_URI_CHARS = new RegExp(regexInvalidURI, 'gu');
   let path, streamName;
