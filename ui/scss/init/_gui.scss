@@ -224,6 +224,11 @@ textarea {
   }
 }
 
+.help--small {
+  @extend .help;
+  font-size: var(--font-xsmall);
+}
+
 .help--warning {
   @extend .help;
   color: var(--color-text-help-warning);
@@ -298,7 +303,7 @@ textarea {
 .thumbnail-preview {
   width: var(--thumbnail-preview-width);
   height: var(--thumbnail-preview-height);
-
+  border-radius: var(--border-radius);
   background-position: 50% 50%;
   background-repeat: no-repeat;
   background-size: cover;

@@ -8,14 +8,16 @@ import LoadingScreen from 'component/common/loading-screen';
 import FileRender from 'component/fileRender';
 import UriIndicator from 'component/uriIndicator';
 import usePersistedState from 'effects/use-persisted-state';
-import { FILE_WRAPPER_CLASS } from 'page/file/view';
+import { PRIMARY_PLAYER_WRAPPER_CLASS } from 'page/file/view';
 import Draggable from 'react-draggable';
 import Tooltip from 'component/common/tooltip';
 import { onFullscreenChange } from 'util/full-screen';
 import { useIsMobile } from 'effects/use-screensize';
 import debounce from 'util/debounce';
+import { useHistory } from 'react-router';
 
 const DEBOUNCE_WINDOW_RESIZE_HANDLER_MS = 60;
+export const INLINE_PLAYER_WRAPPER_CLASS = 'comment-video-class';
 
 type Props = {
   isFloating: boolean,
@@ -34,12 +36,17 @@ export default function FileRenderFloating(props: Props) {
     uri,
     streamingUrl,
     title,
-    isFloating,
+    isFloating: maybeFloating,
     closeFloatingPlayer,
     floatingPlayerEnabled,
     renderMode,
+    playingUri,
+    primaryUri,
   } = props;
 
+  const {
+    location: { pathname },
+  } = useHistory();
   const isMobile = useIsMobile();
   const [fileViewerRect, setFileViewerRect] = useState();
   const [desktopPlayStartTime, setDesktopPlayStartTime] = useState();
@@ -48,8 +55,19 @@ export default function FileRenderFloating(props: Props) {
     x: -25,
     y: window.innerHeight - 400,
   });
-  const [relativePos, setRelativePos] = useState({ x: 0, y: 0 });
+  const [relativePos, setRelativePos] = useState({
+    x: 0,
+    y: 0,
+  });
 
+  const inlineSecondaryPlayer =
+    playingUri &&
+    playingUri.uri !== primaryUri &&
+    pathname === playingUri.pathname &&
+    (playingUri.source === 'comment' || playingUri.source === 'markdown');
+
+  const isFloating = maybeFloating && !inlineSecondaryPlayer;
+  const playingUriSource = playingUri && playingUri.source;
   const isPlayable = RENDER_MODES.FLOATING_MODES.includes(renderMode);
   const isReadyToPlay = isPlayable && (streamingUrl || (fileInfo && fileInfo.completed));
   const loadingMessage =
@@ -126,27 +144,38 @@ export default function FileRenderFloating(props: Props) {
     // Otherwise, this could just be changed to a one-time effect.
   }, [relativePos]);
 
-  // Update 'fileViewerRect':
-  useEffect(() => {
-    function handleResize() {
-      const element = document.querySelector(`.${FILE_WRAPPER_CLASS}`);
-      if (!element) {
-        return;
-      }
+  function handleResize() {
+    const element =
+      (playingUriSource === 'comment' || playingUriSource === 'markdown') && inlineSecondaryPlayer
+        ? document.querySelector(`.${INLINE_PLAYER_WRAPPER_CLASS}`)
+        : document.querySelector(`.${PRIMARY_PLAYER_WRAPPER_CLASS}`);
 
-      const rect = element.getBoundingClientRect();
-      // $FlowFixMe
-      setFileViewerRect(rect);
+    if (!element) {
+      return;
     }
 
+    const rect = element.getBoundingClientRect();
+
+    // $FlowFixMe
+    setFileViewerRect(rect);
+  }
+
+  useEffect(() => {
+    if (streamingUrl) {
+      handleResize();
+    }
+  }, [streamingUrl, pathname, playingUriSource, inlineSecondaryPlayer]);
+
+  useEffect(() => {
     handleResize();
     window.addEventListener('resize', handleResize);
     onFullscreenChange(window, 'add', handleResize);
+
     return () => {
       window.removeEventListener('resize', handleResize);
       onFullscreenChange(window, 'remove', handleResize);
     };
-  }, [setFileViewerRect, isFloating]);
+  }, [setFileViewerRect, isFloating, playingUriSource, inlineSecondaryPlayer]);
 
   useEffect(() => {
     // @if TARGET='app'
@@ -210,7 +239,13 @@ export default function FileRenderFloating(props: Props) {
         })}
         style={
           !isFloating && fileViewerRect
-            ? { width: fileViewerRect.width, height: fileViewerRect.height, left: fileViewerRect.x }
+            ? {
+                width: fileViewerRect.width,
+                height: fileViewerRect.height,
+                left: fileViewerRect.x,
+                // 80px is header height in scss/init/vars.scss
+                top: window.pageYOffset + fileViewerRect.top - 80,
+              }
             : {}
         }
       >

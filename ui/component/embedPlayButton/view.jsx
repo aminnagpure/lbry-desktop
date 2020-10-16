@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import Button from 'component/button';
 import FileViewerEmbeddedTitle from 'component/fileViewerEmbeddedTitle';
-import { useHistory } from 'react-router-dom';
 import { useIsMobile } from 'effects/use-screensize';
 import { formatLbryUrlForWeb } from 'util/url';
 
@@ -12,11 +11,13 @@ type Props = {
   claim: ?Claim,
   doResolveUri: string => void,
   doFetchCostInfoForUri: string => void,
-  doSetFloatingUri: string => void,
   costInfo: ?{ cost: number },
   floatingPlayerEnabled: boolean,
   doPlayUri: (string, ?boolean, ?boolean, (GetResponse) => void) => void,
   doAnaltyicsPurchaseEvent: GetResponse => void,
+  isInComment: boolean,
+  isMarkdownPost: boolean,
+  doSetPlayingUri: ({}) => void,
 };
 
 export default function EmbedPlayButton(props: Props) {
@@ -26,21 +27,28 @@ export default function EmbedPlayButton(props: Props) {
     claim,
     doResolveUri,
     doFetchCostInfoForUri,
-    doSetFloatingUri,
     floatingPlayerEnabled,
     doPlayUri,
+    doSetPlayingUri,
     doAnaltyicsPurchaseEvent,
     costInfo,
+    isInComment,
+    isMarkdownPost,
   } = props;
-  const { push } = useHistory();
   const isMobile = useIsMobile();
   const hasResolvedUri = claim !== undefined;
+  const hasCostInfo = costInfo !== undefined;
   const disabled = !hasResolvedUri || !costInfo;
 
   useEffect(() => {
-    doResolveUri(uri);
-    doFetchCostInfoForUri(uri);
-  }, [uri, doResolveUri, doFetchCostInfoForUri]);
+    if (!hasResolvedUri) {
+      doResolveUri(uri);
+    }
+
+    if (!hasCostInfo) {
+      doFetchCostInfoForUri(uri);
+    }
+  }, [uri, doResolveUri, doFetchCostInfoForUri, hasCostInfo, hasResolvedUri]);
 
   function handleClick() {
     if (disabled) {
@@ -52,7 +60,13 @@ export default function EmbedPlayButton(props: Props) {
       push(formattedUrl);
     } else {
       doPlayUri(uri, undefined, undefined, fileInfo => {
-        doSetFloatingUri(uri);
+        let playingOptions = { uri };
+        if (isInComment) {
+          playingOptions.source = 'comment';
+        } else if (isMarkdownPost) {
+          playingOptions.source = 'markdown';
+        }
+        doSetPlayingUri(playingOptions);
         doAnaltyicsPurchaseEvent(fileInfo);
       });
     }
@@ -67,7 +81,13 @@ export default function EmbedPlayButton(props: Props) {
       style={{ backgroundImage: `url('${thumbnail.replace(/'/g, "\\'")}')` }}
     >
       <FileViewerEmbeddedTitle uri={uri} isInApp />
-      <Button onClick={handleClick} iconSize={30} title={__('Play')} className={'button--icon button--play'} />
+      <Button
+        onClick={handleClick}
+        iconSize={30}
+        title={__('Play')}
+        className={'button--icon button--play'}
+        disabled={disabled}
+      />
     </div>
   );
 }

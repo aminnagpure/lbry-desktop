@@ -270,10 +270,10 @@ function Comment(props: Props) {
                     </div>
                   ) : editedMessage.length >= LENGTH_TO_COLLAPSE ? (
                     <Expandable>
-                      <MarkdownPreview content={message} promptLinks />
+                      <MarkdownPreview content={message} promptLinks isInComment />
                     </Expandable>
                   ) : (
-                    <MarkdownPreview content={message} promptLinks />
+                    <MarkdownPreview content={message} promptLinks isInComment />
                   )}
                 </div>
 

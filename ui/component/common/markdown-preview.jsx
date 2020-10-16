@@ -31,6 +31,8 @@ type MarkdownProps = {
   promptLinks?: boolean,
   noDataStore?: boolean,
   className?: string,
+  isInComment?: boolean,
+  isMarkdownPost?: boolean,
 };
 
 const SimpleText = (props: SimpleTextProps) => {
@@ -99,7 +101,7 @@ schema.attributes.a.push('embed');
 const REPLACE_REGEX = /(<iframe\s+src=["'])(.*?(?=))(["']\s*><\/iframe>)/g;
 
 const MarkdownPreview = (props: MarkdownProps) => {
-  const { content, strip, promptLinks, noDataStore, className } = props;
+  const { content, strip, promptLinks, noDataStore, className, isInComment, isMarkdownPost } = props;
   const strippedContent = content
     ? content.replace(REPLACE_REGEX, (iframeHtml, y, iframeSrc) => {
         // Let the browser try to create an iframe to see if the markup is valid
@@ -123,7 +125,9 @@ const MarkdownPreview = (props: MarkdownProps) => {
     sanitize: schema,
     fragment: React.Fragment,
     remarkReactComponents: {
-      a: promptLinks ? ExternalLink : linkProps => <SimpleLink {...linkProps} noDataStore={noDataStore} />,
+      a: promptLinks
+        ? linkProps => <ExternalLink {...linkProps} isInComment={isInComment} isMarkdownPost={isMarkdownPost} />
+        : linkProps => <SimpleLink {...linkProps} noDataStore={noDataStore} />,
       // Workaraund of remarkOptions.Fragment
       div: React.Fragment,
     },
