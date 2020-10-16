@@ -17,7 +17,7 @@ import debounce from 'util/debounce';
 import { useHistory } from 'react-router';
 
 const DEBOUNCE_WINDOW_RESIZE_HANDLER_MS = 60;
-export const INLINE_PLAYER_WRAPPER_CLASS = 'comment-video-class';
+export const INLINE_PLAYER_WRAPPER_CLASS = 'inline-player__wrapper';
 
 type Props = {
   isFloating: boolean,

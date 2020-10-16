@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import Button from 'component/button';
 import FileViewerEmbeddedTitle from 'component/fileViewerEmbeddedTitle';
+import { useHistory } from 'react-router-dom';
 import { useIsMobile } from 'effects/use-screensize';
 import { formatLbryUrlForWeb } from 'util/url';
 
@@ -35,6 +36,10 @@ export default function EmbedPlayButton(props: Props) {
     isInComment,
     isMarkdownPost,
   } = props;
+  const {
+    push,
+    location: { pathname },
+  } = useHistory();
   const isMobile = useIsMobile();
   const hasResolvedUri = claim !== undefined;
   const hasCostInfo = costInfo !== undefined;
@@ -60,7 +65,7 @@ export default function EmbedPlayButton(props: Props) {
       push(formattedUrl);
     } else {
       doPlayUri(uri, undefined, undefined, fileInfo => {
-        let playingOptions = { uri };
+        let playingOptions = { uri, pathname };
         if (isInComment) {
           playingOptions.source = 'comment';
         } else if (isMarkdownPost) {
