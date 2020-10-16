@@ -29,6 +29,8 @@ reducers[LBRY_REDUX_ACTIONS.USER_STATE_POPULATE] = state => {
   }
 };
 
+reducers[ACTIONS.SET_PREFS_READY] = (state, action) => Object.assign({}, state, { prefsReady: action.data });
+
 reducers[ACTIONS.GET_SYNC_STARTED] = state =>
   Object.assign({}, state, {
     getSyncIsPending: true,

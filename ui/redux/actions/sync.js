@@ -341,3 +341,10 @@ export function doSetSyncLock(lock) {
     data: lock,
   };
 }
+
+export function doSetPrefsReady() {
+  return {
+    type: ACTIONS.SET_PREFS_READY,
+    data: true,
+  };
+}
