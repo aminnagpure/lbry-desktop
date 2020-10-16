@@ -395,6 +395,10 @@
       display: flex;
     }
   }
+
+  .vjs-picture-in-picture-control {
+    display: none;
+  }
 }
 
 .video-js:not(.vjs-fullscreen).vjs-layout-small {
